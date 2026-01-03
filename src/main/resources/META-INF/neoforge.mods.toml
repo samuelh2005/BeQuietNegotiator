@@ -34,7 +34,7 @@ side = "CLIENT"
 [[dependencies.be_quiet_negotiator]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.1,)"
+versionRange = "[1.21.1]"
 ordering = "NONE"
 side = "CLIENT"
 
