@@ -45,9 +45,11 @@ processResources {
     inputs.property 'version', project.version
 
     filesMatching('META-INF/neoforge.mods.toml') {
-        expand "version": project.version
-        expand "deps.minecraft_supported_range": property("deps.minecraft_supported_range")
-        expand "deps.neoforge_supported_range": property("deps.neoforge_supported_range")
+        expand(
+            "version": project.version,
+            "minecraft_supported_range": findProperty("deps.minecraft_supported_range") ?: "",
+            "neoforge_supported_range": findProperty("deps.neoforge_supported_range") ?: ""
+        )
     }
 }
 

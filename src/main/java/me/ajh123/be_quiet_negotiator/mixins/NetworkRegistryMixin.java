@@ -10,7 +10,9 @@ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketLis
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.config.ConfigTracker;
-import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
+//? if <1.21.2 {
+/*import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
+*///?}
 import net.neoforged.neoforge.network.filters.NetworkFilters;
 import net.neoforged.neoforge.network.payload.MinecraftRegisterPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
@@ -63,9 +65,11 @@ public class NetworkRegistryMixin {
             // <Default NeoForge implementation>
             // We are on the client, connected to a vanilla server, make sure we don't have any modded feature flags
             // or bypass custom feature flags if configured to do so.
-            if (!ClientConfig.bypassCustomFeatureFlags() && !CheckFeatureFlags.handleVanillaServerConnection(listener)) {
+            //? if <1.21.2 {
+            /*if (!ClientConfig.bypassCustomFeatureFlags() && !CheckFeatureFlags.handleVanillaServerConnection(listener)) {
                 return;
             }
+            *///?}
 
             // We are on the client, connected to a vanilla server, We have to load the default configs.
             ConfigTracker.INSTANCE.loadDefaultServerConfigs();

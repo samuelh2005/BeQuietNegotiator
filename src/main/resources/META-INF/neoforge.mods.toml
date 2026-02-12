@@ -27,14 +27,14 @@ This mod enables compatibility, but it cannot make incompatible mods magically w
 [[dependencies.be_quiet_negotiator]]
 modId = "neoforge"
 type = "required"
-versionRange = "[${deps.neoforge_supported_range}]"
+versionRange = "[${neoforge_supported_range}]"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.be_quiet_negotiator]]
 modId = "minecraft"
 type = "required"
-versionRange = "[${deps.minecraft_supported_range}]"
+versionRange = "[${minecraft_supported_range}]"
 ordering = "NONE"
 side = "CLIENT"
 
