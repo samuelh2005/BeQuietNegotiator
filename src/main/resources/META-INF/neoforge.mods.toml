@@ -5,7 +5,7 @@ license = "GPL-3.0"
 
 [[mods]]
 modId = "be_quiet_negotiator"
-version = "1.0.2"
+version = "${version}"
 displayName = "Be Quiet Negotiator"
 authors = "ajh123"
 description = '''
@@ -27,14 +27,14 @@ This mod enables compatibility, but it cannot make incompatible mods magically w
 [[dependencies.be_quiet_negotiator]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.1,)"
+versionRange = "[${deps.neoforge_supported_range}]"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.be_quiet_negotiator]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.1]"
+versionRange = "[${deps.minecraft_supported_range}]"
 ordering = "NONE"
 side = "CLIENT"
 

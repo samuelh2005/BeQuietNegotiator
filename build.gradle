@@ -4,7 +4,7 @@ plugins {
 }
 
 group = project.maven_group
-version = project.mod_version
+version = "${property("mod_version")}+${property("deps.minecraft_version")}"
 
 base {
     archivesName = project.archives_name
@@ -36,16 +36,18 @@ loom {
 }
 
 dependencies {
-    minecraft "net.minecraft:minecraft:$project.minecraft_version"
+    minecraft "net.minecraft:minecraft:${property("deps.minecraft_version")}"
     mappings loom.officialMojangMappings()
-    neoForge "net.neoforged:neoforge:$project.neoforge_version"
+    neoForge "net.neoforged:neoforge:${property("deps.neoforge_version")}"
 }
 
 processResources {
     inputs.property 'version', project.version
 
     filesMatching('META-INF/neoforge.mods.toml') {
-        expand version: project.version
+        expand "version": project.version
+        expand "deps.minecraft_supported_range": property("deps.minecraft_supported_range")
+        expand "deps.neoforge_supported_range": property("deps.neoforge_supported_range")
     }
 }
 
@@ -55,8 +57,8 @@ java {
     // If you remove this line, sources will not be generated.
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.toVersion(property("deps.java_version"))
+    targetCompatibility = JavaVersion.toVersion(property("deps.java_version"))
 }
 
 tasks.withType(JavaCompile).configureEach {
