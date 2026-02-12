@@ -61,6 +61,10 @@ java {
 
     sourceCompatibility = JavaVersion.toVersion(property("deps_java_version"))
     targetCompatibility = JavaVersion.toVersion(property("deps_java_version"))
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {

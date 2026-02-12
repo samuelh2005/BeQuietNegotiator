@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "refmap": "be_quiet_negotiator.refmap.json",
   "package": "me.ajh123.be_quiet_negotiator.mixins",
+  "plugin": "me.ajh123.be_quiet_negotiator.MixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
