@@ -10,7 +10,6 @@ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketLis
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.config.ConfigTracker;
-import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.filters.NetworkFilters;
 import net.neoforged.neoforge.network.payload.MinecraftRegisterPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
@@ -63,7 +62,19 @@ public class NetworkRegistryMixin {
             // <Default NeoForge implementation>
             // We are on the client, connected to a vanilla server, make sure we don't have any modded feature flags
             // or bypass custom feature flags if configured to do so.
-            if (!ClientConfig.bypassCustomFeatureFlags() && !CheckFeatureFlags.handleVanillaServerConnection(listener)) {
+            boolean featureFlagsOk = true;
+            try {
+                Class<?> cls = Class.forName("net.neoforged.neoforge.network.configuration.CheckFeatureFlags");
+                java.lang.reflect.Method m = cls.getMethod("handleVanillaServerConnection", ClientConfigurationPacketListener.class);
+                Object res = m.invoke(null, listener);
+                featureFlagsOk = Boolean.TRUE.equals(res);
+            } catch (ClassNotFoundException ignored) {
+                // NeoForge removed CheckFeatureFlags in newer versions — treat as OK and continue
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (!ClientConfig.bypassCustomFeatureFlags() && !featureFlagsOk) {
                 return;
             }
 
