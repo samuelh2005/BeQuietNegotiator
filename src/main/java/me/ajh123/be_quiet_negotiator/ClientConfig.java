@@ -6,7 +6,12 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-@EventBusSubscriber(modid = BeQuietNegotiator.MODID, bus = EventBusSubscriber.Bus.MOD)
+//? if <1.21.7 {
+/*@EventBusSubscriber(modid = BeQuietNegotiator.MODID, bus = EventBusSubscriber.Bus.MOD)
+*///?}
+//? if >=1.21.7 {
+@EventBusSubscriber(modid = BeQuietNegotiator.MODID)
+//?}
 public class ClientConfig
 {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();

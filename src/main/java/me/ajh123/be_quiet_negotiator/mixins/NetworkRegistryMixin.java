@@ -40,6 +40,7 @@ public class NetworkRegistryMixin {
         BeQuietNegotiator.isConnectedToVanillaServer = false;
     }
 
+    //? if <1.21.7 {
     @Inject(
             method = "initializeOtherConnection(Lnet/minecraft/network/protocol/configuration/ClientConfigurationPacketListener;)V",
             at = @At("HEAD"),
@@ -93,6 +94,7 @@ public class NetworkRegistryMixin {
         }
         // Only propagate to super if we are not connected to a vanilla server - done automatically by not returning early.
     }
+    //?}
 
     @SuppressWarnings("unchecked")
     private static Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> getConnectionProtocolMap() {
