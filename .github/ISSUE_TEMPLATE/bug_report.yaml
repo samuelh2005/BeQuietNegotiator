@@ -36,6 +36,6 @@ body:
   - type: "textarea"
     attributes:
       label: "Logs or Crash Report"
-      description: "Provide a link to a log file or crash report. This will help the developers to identify the problematic code. Use a service like https://mclo.gs/, https://gist.github.com"
+      description: "Provide a link to a log file or crash report. You must provide a latest.log, debug.log, and a crash report unless not applicable. You must use a service like https://mclo.gs/, https://gist.github.com rather than pasting the logs directly into the issue."
     validations:
       required: true

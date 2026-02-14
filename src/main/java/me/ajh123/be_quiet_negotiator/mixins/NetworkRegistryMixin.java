@@ -8,7 +8,12 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
+//? if <1.21.11 {
 import net.minecraft.resources.ResourceLocation;
+//?}
+//? if >=1.21.11 {
+/*import net.minecraft.resources.Identifier;
+*///?}
 import net.neoforged.fml.config.ConfigTracker;
 //? if <1.21.2 {
 /*import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
@@ -40,7 +45,8 @@ public class NetworkRegistryMixin {
         BeQuietNegotiator.isConnectedToVanillaServer = false;
     }
 
-    @Inject(
+    //? if <1.21.7 {
+    /*@Inject(
             method = "initializeOtherConnection(Lnet/minecraft/network/protocol/configuration/ClientConfigurationPacketListener;)V",
             at = @At("HEAD"),
             remap = false,
@@ -66,10 +72,10 @@ public class NetworkRegistryMixin {
             // We are on the client, connected to a vanilla server, make sure we don't have any modded feature flags
             // or bypass custom feature flags if configured to do so.
             //? if <1.21.2 {
-            /*if (!ClientConfig.bypassCustomFeatureFlags() && !CheckFeatureFlags.handleVanillaServerConnection(listener)) {
+            /^if (!ClientConfig.bypassCustomFeatureFlags() && !CheckFeatureFlags.handleVanillaServerConnection(listener)) {
                 return;
             }
-            *///?}
+            ^///?}
             //? if >=1.21.2 {
             if (!ClientConfig.bypassCustomFeatureFlags()) {
                 return; }
@@ -93,7 +99,9 @@ public class NetworkRegistryMixin {
         }
         // Only propagate to super if we are not connected to a vanilla server - done automatically by not returning early.
     }
+    *///?}
 
+//? if <1.21.11 {
     @SuppressWarnings("unchecked")
     private static Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> getConnectionProtocolMap() {
         Field payloadRegistrationsField = null;
@@ -112,6 +120,27 @@ public class NetworkRegistryMixin {
         }
         return PAYLOAD_REGISTRATIONS;
     }
+    //?}
+    //? if >=1.21.11 {
+    /*@SuppressWarnings("unchecked")
+    private static Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>> getConnectionProtocolMap() {
+        Field payloadRegistrationsField = null;
+        try {
+            payloadRegistrationsField = NetworkRegistry.class.getDeclaredField("PAYLOAD_REGISTRATIONS");
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        payloadRegistrationsField.setAccessible(true);
+
+        Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>> PAYLOAD_REGISTRATIONS = null;
+        try {
+            PAYLOAD_REGISTRATIONS = (Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>>) payloadRegistrationsField.get(null);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return PAYLOAD_REGISTRATIONS;
+    }
+    *///?}
 
     @Inject(
             method = "checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ClientCommonPacketListener;)V",

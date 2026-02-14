@@ -26,6 +26,11 @@ public class MixinPlugin implements IMixinConfigPlugin {
             return false;
         }
         //? }
+        //? if >=1.21.7 {
+        if (mixinClassName.equals("me.ajh123.be_quiet_negotiator.mixins.NetworkRegistryMixin")) {
+            return false;
+        }
+        //? }
         return true;
     }
 
