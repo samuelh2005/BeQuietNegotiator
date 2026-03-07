@@ -7,7 +7,6 @@ import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
-import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 //? if <1.21.11 {
 import net.minecraft.resources.ResourceLocation;
 //?}
@@ -24,6 +23,11 @@ import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
 import net.neoforged.neoforge.network.registration.ChannelAttributes;
 import net.neoforged.neoforge.network.registration.NetworkPayloadSetup;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
+//? if >=1.21.8 {
+/*
+import net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry;
+import net.neoforged.neoforge.network.registration.NetworkPayloadSetup;
+*///?}
 import net.neoforged.neoforge.network.registration.PayloadRegistration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,19 +38,33 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
 
+//? if <1.21.8 {
 @Mixin(NetworkRegistry.class)
+//?}
+//? if >=1.21.8 {
+/*@Mixin(ClientNetworkRegistry.class)
+*///?}
 public class NetworkRegistryMixin {
+    //? if <1.21.8 {
     @Inject(
-            method = "initializeNeoForgeConnection(Lnet/minecraft/network/protocol/configuration/ServerConfigurationPacketListener;Ljava/util/Map;)V",
+            method = "initializeNeoForgeConnection(Lnet/minecraft/network/protocol/configuration/ClientConfigurationPacketListener;Ljava/util/Map;)V",
             at = @At("TAIL"),
             remap = false
     )
-    private static void initializeNeoForgeConnection(ServerConfigurationPacketListener listener, Map<ConnectionProtocol, Set<ModdedNetworkQueryComponent>> clientChannels, CallbackInfo ci) {
+    private static void initializeNeoForgeConnection(ClientConfigurationPacketListener listener, Map<ConnectionProtocol, Set<ModdedNetworkQueryComponent>> clientChannels, CallbackInfo ci) {
+    //?}
+    //? if >=1.21.8 {
+    /*@Inject(
+            method = "initializeNeoForgeConnection(Lnet/minecraft/network/protocol/configuration/ClientConfigurationPacketListener;Lnet/neoforged/neoforge/network/registration/NetworkPayloadSetup;)V",
+            at = @At("TAIL"),
+            remap = false
+    )
+    private static void initializeNeoForgeConnection(ClientConfigurationPacketListener listener, NetworkPayloadSetup setup, CallbackInfo ci) {
+    *///?}
         BeQuietNegotiator.isConnectedToVanillaServer = false;
     }
 
-    //? if <1.21.7 {
-    /*@Inject(
+    @Inject(
             method = "initializeOtherConnection(Lnet/minecraft/network/protocol/configuration/ClientConfigurationPacketListener;)V",
             at = @At("HEAD"),
             remap = false,
@@ -61,7 +79,12 @@ public class NetworkRegistryMixin {
         ChannelAttributes.setConnectionType(listener.getConnection(), listener.getConnectionType());
 
         // Use reflection to unlock the private PAYLOAD_REGISTRATIONS static member from NetworkRegistry
+        //? if <1.21.11 {
         Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> PAYLOAD_REGISTRATIONS = getConnectionProtocolMap();
+        //?}
+        //? if >=1.21.11 {
+        /*Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>> PAYLOAD_REGISTRATIONS = getConnectionProtocolMap();
+        *///?}
 
         // </Default NeoForge implementation>
 
@@ -72,10 +95,10 @@ public class NetworkRegistryMixin {
             // We are on the client, connected to a vanilla server, make sure we don't have any modded feature flags
             // or bypass custom feature flags if configured to do so.
             //? if <1.21.2 {
-            /^if (!ClientConfig.bypassCustomFeatureFlags() && !CheckFeatureFlags.handleVanillaServerConnection(listener)) {
+            /*if (!ClientConfig.bypassCustomFeatureFlags() && !CheckFeatureFlags.handleVanillaServerConnection(listener)) {
                 return;
             }
-            ^///?}
+            *///?}
             //? if >=1.21.2 {
             if (!ClientConfig.bypassCustomFeatureFlags()) {
                 return; }
@@ -86,7 +109,12 @@ public class NetworkRegistryMixin {
 
             NetworkFilters.injectIfNecessary(listener.getConnection());
 
+            //? if <1.21.11 {
             ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+            //?}
+            //? if >=1.21.11 {
+            /*ImmutableSet.Builder<Identifier> nowListeningOn = ImmutableSet.builder();
+            *///?}
             nowListeningOn.addAll(NetworkRegistry.getInitialListeningChannels(listener.flow()));
             PAYLOAD_REGISTRATIONS.get(ConnectionProtocol.CONFIGURATION).entrySet().stream()
                     .filter(registration -> registration.getValue().matchesFlow(listener.flow()))
@@ -99,11 +127,16 @@ public class NetworkRegistryMixin {
         }
         // Only propagate to super if we are not connected to a vanilla server - done automatically by not returning early.
     }
-    *///?}
+
 
 //? if <1.21.11 {
     @SuppressWarnings("unchecked")
+    //? if <1.21.11 {
     private static Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> getConnectionProtocolMap() {
+    //?}
+    //? if >=1.21.11 {
+    /*private static Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>> getConnectionProtocolMap() {
+    *///?}
         Field payloadRegistrationsField = null;
         try {
             payloadRegistrationsField = NetworkRegistry.class.getDeclaredField("PAYLOAD_REGISTRATIONS");
@@ -112,9 +145,19 @@ public class NetworkRegistryMixin {
         }
         payloadRegistrationsField.setAccessible(true);
 
+        //? if <1.21.11 {
         Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> PAYLOAD_REGISTRATIONS = null;
+        //?}
+        //? if >=1.21.11 {
+        /*Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>> PAYLOAD_REGISTRATIONS = null;
+        *///?}
         try {
+            //? if <1.21.11 {
             PAYLOAD_REGISTRATIONS = (Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>>) payloadRegistrationsField.get(null);
+            //?}
+            //? if >=1.21.11 {
+            /*PAYLOAD_REGISTRATIONS = (Map<ConnectionProtocol, Map<Identifier, PayloadRegistration<?>>>) payloadRegistrationsField.get(null);
+            *///?}
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -142,6 +185,7 @@ public class NetworkRegistryMixin {
     }
     *///?}
 
+    //? if <1.21.8 {
     @Inject(
             method = "checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ClientCommonPacketListener;)V",
             at = @At("HEAD"),
@@ -154,4 +198,5 @@ public class NetworkRegistryMixin {
             ci.cancel();
         }
     }
+    //?}
 }
