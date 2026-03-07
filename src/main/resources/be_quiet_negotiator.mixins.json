@@ -11,7 +11,8 @@
     "CheckFeatureFlagsMixin",
     "ClientCommonPacketListenerImplMixin",
     "NetworkRegistryMixin",
-    "PacketDecoderMixin"
+    "PacketDecoderMixin",
+    "TagCollectorMixin"
   ],
   "injectors": {
     "defaultRequire": 1
