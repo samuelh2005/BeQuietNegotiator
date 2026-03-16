@@ -29,3 +29,14 @@ jobs:
 
       - name: Build with Gradle
         run: chmod +x ./gradlew && ./gradlew build
+
+      - name: Upload all module JARs
+        uses: actions/upload-artifact@v4
+        with:
+          name: jars-${{ github.sha }}
+          path: |
+            **/build/libs/*.jar
+            !**/build/libs/*-sources.jar
+            !**/build/libs/*-javadoc.jar
+          if-no-files-found: error
+          retention-days: 14
